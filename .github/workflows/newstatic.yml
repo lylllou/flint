@@ -21,10 +21,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libvirt-dev pkg-config
           
-      - name: Build Binary
-        env:
-          CGO_ENABLED: 1
-
       - name: Install Bun
         uses: oven-sh/setup-bun@v1
         with:
@@ -41,7 +37,7 @@ jobs:
         env:
           GOOS: linux
           GOARCH: amd64
-          CGO_ENABLED: 0  # 静态编译关键参数
+          CGO_ENABLED: 1  # 静态编译关键参数
         run: |
           go build -ldflags="-s -w" -o flint .
 
