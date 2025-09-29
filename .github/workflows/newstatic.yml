@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout Code
@@ -15,12 +15,12 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.25.0'
-          
+
       - name: Install Native Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libvirt-dev pkg-config
-          
+
       - name: Install Bun
         uses: oven-sh/setup-bun@v1
         with:
