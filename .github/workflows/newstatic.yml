@@ -1,0 +1,52 @@
+name: Release Linux AMD64 Static Binary
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.0'
+
+      - name: Install Native Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvirt-dev pkg-config
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Build Web UI
+        run: |
+          cd web
+          bun install
+          bun run build
+          cd ..
+
+      - name: Build Static Binary
+        env:
+          GOOS: linux
+          GOARCH: amd64
+          CGO_ENABLED: 0  # 静态编译关键参数
+        run: |
+          go build -ldflags="-s -w" -o flint .
+
+      - name: Package Binary
+        run: |
+          zip -j flint-linux-amd64-static.zip flint
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flint-binary-linux-amd64-static
+          path: flint-linux-amd64-static.zip
